@@ -29,7 +29,7 @@
  * @version 1.2.2 (20181004)
  */
 public class Player implements StrategicPlayer {
-    private int coinsPerWheel;
+    private int coinsPerWheel; // need javadoc
     private int revealsPerSpin;
     private int maxNumSpins;
     private boolean newGameGetSlotsToReveal = false;
