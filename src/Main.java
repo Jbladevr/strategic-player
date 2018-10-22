@@ -8,7 +8,7 @@ import coinwheelgame.Wheel;
  */
 public class Main {
     public static void main (String[]args){
-       fourCoinTwoRevealStrategyTest();
+        fourCoinTwoRevealStrategyTest();
     }
 
     public static void fourCoinTwoRevealStrategyTest() {
