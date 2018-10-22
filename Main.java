@@ -12,14 +12,14 @@ public class Main {
     }
 
     public static void fourCoinTwoRevealStrategyTest() {
-        int numberOfTestGames = 100000; //change this if you want to run more or less games for this test
+        int numberOfTestGames = 10000; //change this if you want to run more or less games for this test
         int maxSpinsForTest = 4;
         int gamesWonAfterMaxSpins = 0;
         int gamesLost = 0;
 
         for (int i = 0; i < numberOfTestGames; i++) {
             Player player = new Player();
-            player.beginGame(4, 2, 3);
+            player.beginGame(4, 2, maxSpinsForTest);
 
             Wheel wheel = new Wheel(4);
 

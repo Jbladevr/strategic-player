@@ -46,7 +46,7 @@ public class Player implements StrategicPlayer {
     private int maxNumSpins;
 
     /**
-     * holds a coin number for the four coins two reaveal strategy.
+     * holds a coin number for the four coins two reveal strategy.
      */
     private final int strategicCoinValue = 4;
 
