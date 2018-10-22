@@ -1,5 +1,30 @@
 /**
  * A player of the Spin-the-Wheel Coin Matching Game.
+ * <br><br>
+ * Strategy for a 4 coin, 2 reveal game: <br>
+ * 1st turn:
+ *  getSlotsToReveal() is called and it returns a pattern "??--".
+ *  getNewCoinStates(revealedPattern) is called then and it
+ *  returns "HH--".
+ * 2nd step:
+ *  getSlotsToReveal() is called and it returns a pattern "?-?-".
+ *  getNewCoinStates(revealedPattern) is called next and it
+ *  returns "H-H-".
+ * 3rd step:
+ *  getSlotsToReveal() is called and it returns a pattern "?-?-"
+ *  again.
+ *  getNewCoinStates(revealedPattern) is called next and it
+ *  returns "T-H-".
+ * 4th step:
+ *  getSlotsToReveal() is called and it returns a pattern "??--".
+ *  getNewCoinStates(revealedPatter) is called and it returns
+ *  the flipped version of what revealedPattern is (example:
+ *  "HT--" becomes "TH--").
+ * 5th step:
+ *  getSlotsToReveal() is called and it returns a pattern "?-?-".
+ *  getNewCoinStates(revealedPattern) is called and it returns
+ *  the flipped version of revealedPattern (example: "H-H-" becomes
+ *  "T-T-". And it is a guaranteed win after this step.
  *
  * @author CS4250 Fall 2018
  * @version 1.2.2 (20181004)
@@ -9,24 +34,61 @@ public class Player implements StrategicPlayer {
      * holds a value of the number of coins in the current game.
      */
     private int coinsPerWheel;
+
     /**
      * holds a value of the number of reveals allowed in the current game.
      */
     private int revealsPerSpin;
+
     /**
      * holds a value of the maximum number of spins allowed in the current game.
      */
     private int maxNumSpins;
+
     /**
      * holds a coin number for the four coins two reaveal strategy.
      */
     private final int strategicCoinValue = 4;
+
     /**
-     * holds a number of reveals for the four coins two reaveal strategy.
+     * holds a number of reveals for the four coins two reveal strategy.
      */
     private final int strategicRevealValue = 2;
 
+    /**
+     * keeps track of a current turn.
+     */
     private int turn;
+
+    /**
+     * turn One for switch statements.
+     */
+    private final int turnOne = 1;
+
+    /**
+     * turn Two for switch statements.
+     */
+    private final int turnTwo = 2;
+
+    /**
+     * turn Three for switch statements.
+     */
+    private final int turnThree = 3;
+
+    /**
+     * turn Four for switch statements.
+     */
+    private final int turnFour = 4;
+
+    /**
+     * turn Five for switch statements.
+     */
+    private final int turnFive = 5;
+
+    /**
+     * number three.
+     */
+    private final int three = 3;
 
     /**
      * Establishes that the player is beginning a new game.
@@ -37,10 +99,16 @@ public class Player implements StrategicPlayer {
     public void beginGame(final int coinsPerWheelParam,
                           final int revealsPerSpinParam,
                           final int maxNumSpinsParam) {
-        this.coinsPerWheel = coinsPerWheelParam;
-        this.revealsPerSpin = revealsPerSpinParam;
-        this.maxNumSpins = maxNumSpinsParam;
-        turn = 1;
+        if ((coinsPerWheelParam > 1) && (revealsPerSpinParam > 0)
+                && (maxNumSpinsParam > -1) && (coinsPerWheelParam
+                >= revealsPerSpinParam)) {
+            this.coinsPerWheel = coinsPerWheelParam;
+            this.revealsPerSpin = revealsPerSpinParam;
+            this.maxNumSpins = maxNumSpinsParam;
+            turn = 1;
+        } else {
+            throw new RuntimeException("Invalid inputs");
+        }
     }
 
     /**
@@ -56,8 +124,8 @@ public class Player implements StrategicPlayer {
         StringBuilder stringBuilder = new StringBuilder();
 
         // four coins two reveals strategy
-        if (coinsPerWheel == strategicCoinValue && revealsPerSpin
-                == strategicRevealValue) {
+        if ((coinsPerWheel == strategicCoinValue) && (revealsPerSpin
+                == strategicRevealValue)) {
             fourTwoStrategyReqPattern(stringBuilder, turn);
         } else { // any other game strategy
             for (int i = 0; i < coinsPerWheel; i++) {
@@ -107,10 +175,10 @@ public class Player implements StrategicPlayer {
      * @param stringBuilder builds up the string
      */
     private void loopThroughElements(final String sideWanted,
-                                             final char sideHave,
-                                             final int lengthOfTheSequence,
-                                             final StringBuilder
-                                                     stringBuilder) {
+                                     final char sideHave,
+                                     final int lengthOfTheSequence,
+                                     final StringBuilder
+                                             stringBuilder) {
         for (int i = 0; i < lengthOfTheSequence; i++) {
             if (stringBuilder.charAt(i) == sideHave) {
                 stringBuilder.replace(i, (i + 1), sideWanted);
@@ -124,41 +192,42 @@ public class Player implements StrategicPlayer {
      * specific strategy.
      * @param stringBuilder holds the sequence.
      * @param turnCounter specifies which turn it currently is.
-     */
-    private void fourTwoStrategy(final StringBuilder stringBuilder, final int turnCounter) {
-        switch (turnCounter){
-            case 1:
+     * */
+    private void fourTwoStrategy(final StringBuilder stringBuilder,
+                                 final int turnCounter) {
+        switch (turnCounter) {
+            case turnOne:
                 loopThroughElements("H", 'T', strategicCoinValue,
                         stringBuilder);
-                turn++;
+                turn = turnTwo;
                 break;
-            case 2:
+            case turnTwo:
                 loopThroughElements("H", 'T', strategicCoinValue,
                         stringBuilder);
-                turn++;
+                turn = turnThree;
                 break;
-            case 3:
+            case turnThree:
                 if (stringBuilder.toString().equals("H-H-")) {
-                    reverseDifferentElement(stringBuilder, 2, 3 );
+                    reverseDifferentElement(stringBuilder, 2, three);
                 } else {
                     loopThroughElements("H", 'T', strategicCoinValue,
                             stringBuilder);
                 }
-                turn++;
+                turn = turnFour;
                 break;
-            case 4:
+            case turnFour:
                 if (stringBuilder.toString().equals("HT--")) {
-                    reverseDifferentElement(stringBuilder, 1, 2 );
+                    reverseDifferentElement(stringBuilder, 1, 2);
                 } else if (stringBuilder.toString().equals("TH--")) {
-                    reverseDifferentElement(stringBuilder, 1, 2 );
+                    reverseDifferentElement(stringBuilder, 1, 2);
                 } else {
                     reverseSameElements(stringBuilder);
                 }
-                turn++;
+                turn = turnFive;
                 break;
-            case 5:
+            case turnFive:
                 reverseSameElements(stringBuilder);
-                turn = 1;
+                turn = turnOne;
                 break;
             default:
                 break;
@@ -170,21 +239,22 @@ public class Player implements StrategicPlayer {
      * @param stringBuilder holds the sequence.
      * @param turnCounter specifies which turn it currently is.
      */
-    private void fourTwoStrategyReqPattern(final StringBuilder stringBuilder, final int turnCounter) {
+    private void fourTwoStrategyReqPattern(final StringBuilder stringBuilder,
+                                           final int turnCounter) {
         switch (turnCounter) {
-            case 1:
+            case turnOne:
                 stringBuilder.append("??--");
                 break;
-            case 2:
+            case turnTwo:
                 stringBuilder.append("?-?-");
                 break;
-            case 3:
+            case turnThree:
                 stringBuilder.append("?-?-");
                 break;
-            case 4:
+            case turnFour:
                 stringBuilder.append("??--");
                 break;
-            case 5:
+            case turnFive:
                 stringBuilder.append("?-?-");
                 break;
             default:
@@ -193,31 +263,35 @@ public class Player implements StrategicPlayer {
     }
 
     /**
-     * Changes the sides of both coins to the opposite side when they are different.
+     * Changes the sides of both coins to the opposite side when
+     * they are different.
      * @param stringBuilder holds the sequence
-     * @param firstIndex first index that is used to help choose which is location
-     *                   of the second character that needs to be changed.
-     * @param secondIndex second index that is used to help choose which is location
-     *                    of the second character that needs to be changed.
+     * @param firstIndex first index that is used to help choose
+     *                   which is location of the second character
+     *                   that needs to be changed.
+     * @param secondIndex second index that is used to help choose
+     *                    which is location of the second character
+     *                    that needs to be changed.
      */
     private void reverseDifferentElement(final StringBuilder stringBuilder,
-                                                 final int firstIndex,
-                                                 final int secondIndex){
-        if (stringBuilder.charAt(0) == 'H'){
-            stringBuilder.replace(0,1, "T");
+                                         final int firstIndex,
+                                         final int secondIndex) {
+        if (stringBuilder.charAt(0) == 'H') {
+            stringBuilder.replace(0, 1, "T");
             stringBuilder.replace(firstIndex, secondIndex, "H");
         } else {
-            stringBuilder.replace(0,1, "H");
+            stringBuilder.replace(0, 1, "H");
             stringBuilder.replace(firstIndex, secondIndex, "T");
         }
     }
 
     /**
-     * Changes the sides of both coins to the opposite side when they are the same.
+     * Changes the sides of both coins to the opposite side when
+     * they are the same.
      * @param stringBuilder holds the sequence.
      */
-    private void reverseSameElements(final StringBuilder stringBuilder){
-        if (stringBuilder.charAt(0) == 'H'){
+    private void reverseSameElements(final StringBuilder stringBuilder) {
+        if (stringBuilder.charAt(0) == 'H') {
             loopThroughElements("T", 'H', strategicCoinValue,
                     stringBuilder);
         } else {
